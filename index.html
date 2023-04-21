@@ -43,6 +43,17 @@
       font-size: 16px;
       cursor: pointer;
     }
+    #wallet-options {
+      display: none;
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      padding: 10px;
+      background-color: #fff;
+      border: none;
+      font-size: 16px;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
@@ -51,29 +62,42 @@
     <h2>Select Wallet</h2>
     <button id="unisat-wallet">UniSat Wallet</button>
   </div>
+  <button id="wallet-options">Wallet Options</button>
   <script>
-    if (typeof window.unisat !== 'undefined') {
-  console.log('UniSat Wallet is installed!');
-}
+    const connectWalletButton = document.getElementById('connect-wallet');
+    const walletMenu = document.getElementById('wallet-menu');
+    const unisatWalletButton = document.getElementById('unisat-wallet');
+    const walletOptionsButton = document.getElementById('wallet-options');
 
-const connectWalletButton = document.getElementById('connect-wallet');
-const walletMenu = document.getElementById('wallet-menu');
-const unisatWalletButton = document.getElementById('unisat-wallet');
+    let isConnected = false;
 
-connectWalletButton.addEventListener('click', () => {
-  walletMenu.classList.add('show');
-});
+    connectWalletButton.addEventListener('click', () => {
+      if (isConnected) {
+        walletOptionsButton.style.display = 'block';
+      } else {
+        walletMenu.classList.add('show');
+      }
+    });
 
-unisatWalletButton.addEventListener('click', async () => {
-  try {
-    const accounts = await window.unisat.requestAccounts();
-    console.log('connect success', accounts);
-    connectWalletButton.textContent = `${accounts[0].substr(0, 8)}...`;
-    walletMenu.classList.remove('show');
-  } catch (e) {
-    console.log('connect failed');
-  }
-});
+    unisatWalletButton.addEventListener('click', async () => {
+      try {
+        const accounts = await window.unisat.requestAccounts();
+        console.log('connect success', accounts);
+        connectWalletButton.textContent = `${accounts[0].substr(0, 8)}...`;
+        walletMenu.classList.remove('show');
+        isConnected = true;
+        walletOptionsButton.style.display = 'block';
+      } catch (e) {
+        console.log('connect failed');
+      }
+    });
+
+    walletOptionsButton.addEventListener('click', () => {
+      window.unisat.disconnect();
+      isConnected = false;
+      connectWalletButton.textContent = 'Connect Wallet';
+      walletOptionsButton.style.display = 'none';
+    });
   </script>
 </body>
 </html>
