@@ -1,57 +1,79 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>UniSat Wallet Rarity Display</title>
+  <title>UniSat Wallet Demo</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="shortcut icon" href="https://your-site.com/your-icon.png" />
   <style>
-    button {
+    body {
+      background-color: #f2f2f2;
+    }
+    #connect-wallet {
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      padding: 10px;
+      background-color: #fff;
+      border: none;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    #wallet-menu {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      padding: 20px;
+      background-color: #fff;
+      border: 1px solid #ccc;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+      z-index: 1;
+    }
+    #wallet-menu.show {
+      display: block;
+    }
+    #wallet-menu h2 {
+      margin-top: 0;
+    }
+    #wallet-menu button {
+      margin-top: 10px;
       padding: 10px;
       font-size: 16px;
+      cursor: pointer;
     }
   </style>
 </head>
 <body>
-  <h1>UniSat Wallet Rarity Display</h1>
-  <button id="connectBtn" onclick="connectWallet()">Connect UniSat Wallet</button>
-  <div id="rarityDisplay"></div>
+  <button id="connect-wallet">Connect Wallet</button>
+  <div id="wallet-menu">
+    <h2>Select Wallet</h2>
+    <button id="unisat-wallet">UniSat Wallet</button>
+  </div>
   <script>
-    async function connectWallet() {
-      try {
-        const accounts = await window.unisat.requestAccounts();
-        if (accounts.length > 0) {
-          document.getElementById("connectBtn").disabled = true;
-          document.getElementById("connectBtn").innerText = "Connected";
-          displayRarity(accounts[0]);
-        }
-      } catch (e) {
-        console.log('connect failed');
-      }
-    }
+    if (typeof window.unisat !== 'undefined') {
+  console.log('UniSat Wallet is installed!');
+}
 
-    async function displayRarity(address) {
-      const balance = await window.unisat.getBalance();
-      const totalSatoshis = balance.total;
-      const rarityCounter = {};
+const connectWalletButton = document.getElementById('connect-wallet');
+const walletMenu = document.getElementById('wallet-menu');
+const unisatWalletButton = document.getElementById('unisat-wallet');
 
-      for (let i = 1; i <= totalSatoshis; i++) {
-        const response = await fetch(`https://ordinals.com/sat/${i}`);
-        const data = await response.json();
-        const rarity = data.rarity;
-        rarityCounter[rarity] = (rarityCounter[rarity] || 0) + 1;
-      }
+connectWalletButton.addEventListener('click', () => {
+  walletMenu.classList.add('show');
+});
 
-      const sortedRarities = Object.keys(rarityCounter).sort((a, b) => parseInt(a) - parseInt(b));
-      let rarityDisplay = "<h2>Rarities</h2><ul>";
-
-      sortedRarities.forEach(rarity => {
-        rarityDisplay += `<li>Rarity ${rarity}: ${rarityCounter[rarity]} satoshis</li>`;
-      });
-
-      rarityDisplay += "</ul>";
-      document.getElementById("rarityDisplay").innerHTML = rarityDisplay;
-    }
+unisatWalletButton.addEventListener('click', async () => {
+  try {
+    const accounts = await window.unisat.requestAccounts();
+    console.log('connect success', accounts);
+    connectWalletButton.textContent = `${accounts[0].substr(0, 8)}...`;
+    walletMenu.classList.remove('show');
+  } catch (e) {
+    console.log('connect failed');
+  }
+});
   </script>
 </body>
 </html>
