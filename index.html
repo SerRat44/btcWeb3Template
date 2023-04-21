@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UniSat Wallet Connection Example</title>
+  <link rel="shortcut icon" href="https://your-site.com/your-icon.png" />
+  <script>
+    async function connectWallet() {
+      if (typeof window.unisat === 'undefined') {
+        console.error('UniSat Wallet is not installed or running.');
+        return;
+      }
+
+      try {
+        let accounts = await window.unisat.requestAccounts();
+        console.log('Connect success:', accounts);
+
+        // You can use other methods here to get relevant information
+        // after successfully connecting to the wallet.
+      } catch (e) {
+        console.error('Connect failed:', e);
+      }
+    }
+  </script>
+</head>
+<body>
+  <h1>UniSat Wallet Connection Example</h1>
+  <button id="connectButton" onclick="connectWallet()">Connect UniSat Wallet</button>
+</body>
+</html>
