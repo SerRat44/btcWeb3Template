@@ -8,6 +8,8 @@
   <style>
     body {
       background-color: #f2f2f2;
+	  margin: 4px;
+	  overflow-y: auto;
     }
     #connect-wallet {
       position: fixed;
@@ -30,6 +32,9 @@
       border: 1px solid #ccc;
       box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
       z-index: 1;
+	  flex-direction: column;
+	  align-items: center;
+      justify-content: center;
     }
     .wallet-menu h2 {
       margin-top: 0;
@@ -38,11 +43,33 @@
       margin-top: 10px;
       padding: 10px;
       font-size: 16px;
+	  text-align: center;
       cursor: pointer;
     }
+	#main-body {
+	display: flex;
+	  flex-direction: column;
+	  align-items: center;
+      justify-content: center;
+	  margin-top: 50px;
+	}
+	#rarity-table {
+  width: 40%;
+  max-width: 600px;
+  margin: 30px auto;
+  border-collapse: collapse;
+  background-color: #f2f2f2;
+}
+#rarity-table th,
+#rarity-table td {
+  padding: 10px;
+  text-align: center;
+  border: 1px solid #ccc;
+}
   </style>
 </head>
 <body>
+
   <button id="connect-wallet">Connect Wallet</button>
   <div id="select-menu" class="wallet-menu">
     <h2>Select Wallet</h2>
@@ -52,26 +79,63 @@
     <h2>Options</h2>
     <button id="disconnect-wallet">Disconnect</button>
   </div>
+  
+  <div id="main-body">
+    <button id="check-wallet">Check Wallet</button>
+    <table id="rarity-table">
+    <thead>
+      <tr>
+        <th>Rarity</th>
+        <th>Quantity</th>
+      </tr>
+    </thead>
+    <tbody>
+    <!-- Table rows will be generated using JavaScript -->
+    </tbody>
+  </table>
+  </div>
+
   <script>
-    if (typeof window.unisat !== 'undefined') {
-      console.log('UniSat Wallet is installed!');
-    }
 
     const connectWalletButton = document.getElementById('connect-wallet');
     const selectMenu = document.getElementById('select-menu');
     const unisatWalletButton = document.getElementById('unisat-wallet');
     const optionsMenu = document.getElementById('options-menu');
     const disconnectWalletButton = document.getElementById('disconnect-wallet');
+	
+	const checkWalletButton = document.getElementById('check-wallet');
+	const rarityTable = document.getElementById('rarity-table');
+	const tableBody = rarityTable.querySelector('tbody');
+
+
+
+	const setMenuVisibility = (menu, isVisible) => {
+		menu.style.display = isVisible ? 'flex' : 'none';
+    };
 
     const resetConnectButton = () => {
-      connectWalletButton.textContent = 'Connect Wallet';
+		connectWalletButton.textContent = 'Connect Wallet';
     };
+	
+	const handleBodyClick = (event) => {
+      if (
+        event.target !== connectWalletButton &&
+        event.target !== selectMenu &&
+        event.target !== unisatWalletButton &&
+        event.target !== optionsMenu &&
+        event.target !== disconnectWalletButton
+      ) {
+        setMenuVisibility(selectMenu, false);
+        setMenuVisibility(optionsMenu, false);
+      }
+    };
+	document.addEventListener('click', handleBodyClick);
 
     connectWalletButton.addEventListener('click', () => {
       if (connectWalletButton.textContent !== 'Connect Wallet') {
-        optionsMenu.style.display = 'block';
+        setMenuVisibility(optionsMenu, true);
       } else {
-        selectMenu.style.display = 'block';
+        setMenuVisibility(selectMenu, true);
       }
     });
 
@@ -88,14 +152,49 @@
 
     disconnectWalletButton.addEventListener('click', async () => {
       try {
-        await window.unisat.requestAccounts(); // triggers disconnect
+        await window.unisat.requestAccounts();
         resetConnectButton();
         optionsMenu.style.display = 'none';
-		
+		console.log('disconnect successful');
       } catch (e) {
         console.log('disconnect failed');
       }
     });
+	
+	
+	
+	let rarityData = [
+  { name: 'common', quantity: 0 },
+  { name: 'uncommon', quantity: 0 },
+  { name: 'rare', quantity: 0 },
+  { name: 'epic', quantity: 0 },
+  { name: 'legendary', quantity: 0 },
+  { name: 'mythic', quantity: 0 },
+];
+
+const showTable = () => {
+  tableBody.innerHTML = '';
+  for (const rarity of rarityData) {
+    const row = document.createElement('tr');
+    const nameCell = document.createElement('td');
+    const quantityCell = document.createElement('td');
+    nameCell.textContent = rarity.name;
+    quantityCell.textContent = rarity.quantity;
+    row.appendChild(nameCell);
+    row.appendChild(quantityCell);
+    tableBody.appendChild(row);
+  }
+  checkWalletButton.style.display = 'block';
+  rarityTable.style.display = 'table';
+};
+
+checkWalletButton.addEventListener('click', () => {
+  if (connectWalletButton.textContent === 'Connect Wallet') {
+    alert('Please connect your wallet first.');
+  } else {
+    // Add your logic to check the wallet for satoshi rarity types here
+  }
+});
 
   </script>
 </body>
