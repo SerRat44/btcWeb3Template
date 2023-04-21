@@ -91,13 +91,10 @@
         await window.unisat.requestAccounts(); // triggers disconnect
         resetConnectButton();
         optionsMenu.style.display = 'none';
+		
       } catch (e) {
         console.log('disconnect failed');
       }
-    });
-
-    window.unisat.on('accountsChanged', () => {
-      resetConnectButton();
     });
 
   </script>
