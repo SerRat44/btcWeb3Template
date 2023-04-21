@@ -19,7 +19,7 @@
       font-size: 16px;
       cursor: pointer;
     }
-    #wallet-menu {
+    .wallet-menu {
       display: none;
       position: fixed;
       top: 50%;
@@ -31,13 +31,10 @@
       box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
       z-index: 1;
     }
-    #wallet-menu.show {
-      display: block;
-    }
-    #wallet-menu h2 {
+    .wallet-menu h2 {
       margin-top: 0;
     }
-    #wallet-menu button {
+    .wallet-menu button {
       margin-top: 10px;
       padding: 10px;
       font-size: 16px;
@@ -47,52 +44,62 @@
 </head>
 <body>
   <button id="connect-wallet">Connect Wallet</button>
-  <div id="wallet-menu">
+  <div id="select-menu" class="wallet-menu">
     <h2>Select Wallet</h2>
+    <button id="unisat-wallet">UniSat Wallet</button>
+  </div>
+  <div id="options-menu" class="wallet-menu">
+    <h2>Options</h2>
     <button id="disconnect-wallet">Disconnect</button>
   </div>
   <script>
+    if (typeof window.unisat !== 'undefined') {
+      console.log('UniSat Wallet is installed!');
+    }
+
     const connectWalletButton = document.getElementById('connect-wallet');
+    const selectMenu = document.getElementById('select-menu');
+    const unisatWalletButton = document.getElementById('unisat-wallet');
+    const optionsMenu = document.getElementById('options-menu');
     const disconnectWalletButton = document.getElementById('disconnect-wallet');
-    const walletMenu = document.getElementById('wallet-menu');
 
-    function resetButton() {
+    const resetConnectButton = () => {
       connectWalletButton.textContent = 'Connect Wallet';
-    }
+    };
 
-    function showConnectMenu() {
-      disconnectWalletButton.removeEventListener('click', disconnectWallet);
-      disconnectWalletButton.style.display = 'none';
-      walletMenu.classList.remove('show');
-      connectWalletButton.addEventListener('click', showWalletMenu);
-    }
-
-    async function disconnectWallet() {
-      try {
-        await window.unisat.disconnect();
-        resetButton();
-        showConnectMenu();
-      } catch (e) {
-        console.log('disconnect failed', e);
+    connectWalletButton.addEventListener('click', () => {
+      if (connectWalletButton.textContent !== 'Connect Wallet') {
+        optionsMenu.style.display = 'block';
+      } else {
+        selectMenu.style.display = 'block';
       }
-    }
+    });
 
-    async function showWalletMenu() {
-      connectWalletButton.removeEventListener('click', showWalletMenu);
+    unisatWalletButton.addEventListener('click', async () => {
       try {
         const accounts = await window.unisat.requestAccounts();
         console.log('connect success', accounts);
         connectWalletButton.textContent = `${accounts[0].substr(0, 8)}...`;
-        disconnectWalletButton.addEventListener('click', disconnectWallet);
-        disconnectWalletButton.style.display = 'block';
-        walletMenu.classList.add('show');
+        selectMenu.style.display = 'none';
       } catch (e) {
-        console.log('connect failed', e);
-        connectWalletButton.addEventListener('click', showWalletMenu);
+        console.log('connect failed');
       }
-    }
+    });
 
-    connectWalletButton.addEventListener('click', showWalletMenu);
+    disconnectWalletButton.addEventListener('click', async () => {
+      try {
+        await window.unisat.requestAccounts(); // triggers disconnect
+        resetConnectButton();
+        optionsMenu.style.display = 'none';
+      } catch (e) {
+        console.log('disconnect failed');
+      }
+    });
+
+    window.unisat.on('accountsChanged', () => {
+      resetConnectButton();
+    });
+
   </script>
 </body>
 </html>
