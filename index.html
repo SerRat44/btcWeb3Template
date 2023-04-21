@@ -3,29 +3,55 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>UniSat Wallet Connection Example</title>
+  <title>UniSat Wallet Rarity Display</title>
   <link rel="shortcut icon" href="https://your-site.com/your-icon.png" />
-  <script>
-    async function connectWallet() {
-      if (typeof window.unisat === 'undefined') {
-        console.error('UniSat Wallet is not installed or running.');
-        return;
-      }
-
-      try {
-        let accounts = await window.unisat.requestAccounts();
-        console.log('Connect success:', accounts);
-
-        // You can use other methods here to get relevant information
-        // after successfully connecting to the wallet.
-      } catch (e) {
-        console.error('Connect failed:', e);
-      }
+  <style>
+    button {
+      padding: 10px;
+      font-size: 16px;
     }
-  </script>
+  </style>
 </head>
 <body>
-  <h1>UniSat Wallet Connection Example</h1>
-  <button id="connectButton" onclick="connectWallet()">Connect UniSat Wallet</button>
+  <h1>UniSat Wallet Rarity Display</h1>
+  <button id="connectBtn" onclick="connectWallet()">Connect UniSat Wallet</button>
+  <div id="rarityDisplay"></div>
+  <script>
+    async function connectWallet() {
+      try {
+        const accounts = await window.unisat.requestAccounts();
+        if (accounts.length > 0) {
+          document.getElementById("connectBtn").disabled = true;
+          document.getElementById("connectBtn").innerText = "Connected";
+          displayRarity(accounts[0]);
+        }
+      } catch (e) {
+        console.log('connect failed');
+      }
+    }
+
+    async function displayRarity(address) {
+      const balance = await window.unisat.getBalance();
+      const totalSatoshis = balance.total;
+      const rarityCounter = {};
+
+      for (let i = 1; i <= totalSatoshis; i++) {
+        const response = await fetch(`https://ordinals.com/sat/${i}`);
+        const data = await response.json();
+        const rarity = data.rarity;
+        rarityCounter[rarity] = (rarityCounter[rarity] || 0) + 1;
+      }
+
+      const sortedRarities = Object.keys(rarityCounter).sort((a, b) => parseInt(a) - parseInt(b));
+      let rarityDisplay = "<h2>Rarities</h2><ul>";
+
+      sortedRarities.forEach(rarity => {
+        rarityDisplay += `<li>Rarity ${rarity}: ${rarityCounter[rarity]} satoshis</li>`;
+      });
+
+      rarityDisplay += "</ul>";
+      document.getElementById("rarityDisplay").innerHTML = rarityDisplay;
+    }
+  </script>
 </body>
 </html>
