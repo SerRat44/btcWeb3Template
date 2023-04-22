@@ -179,14 +179,14 @@ function initializeWallet() {
 	function handleNetworkChanged() {
   console.log("Network changed");
   if (activeWallet) {
-    await disconnectWallet();
+    disconnectWallet();
   }
 }
 
 function handleAddressChanged() {
   console.log("Address changed");
   if (activeWallet) {
-    await disconnectWallet();
+    disconnectWallet();
   }
 }
 	// end of wallet connect
