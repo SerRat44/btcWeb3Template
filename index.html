@@ -113,6 +113,7 @@ function initializeWallet() {
       const accounts = await activeWallet.connect();
       connectButton.textContent = `${accounts[0].substr(0, 8)}...`;
       selectMenu.style.display = "none";
+	  console.log("Connection successful")
     } catch (e) {
       console.log("connect failed");
     }
@@ -129,10 +130,6 @@ function initializeWallet() {
       console.log("disconnect failed");
     }
   };
-	
-    
-	
-
 	
 	const setMenuVisibility = (menu, isVisible) => {
 		menu.style.display = isVisible ? 'flex' : 'none';
@@ -182,13 +179,13 @@ checkWalletButton.addEventListener('click', async () => {
   }
 
   try {
-    const address = await activeWallet.getAccounts();
+    const address = activeWallet.getAccounts();
     console.log('Address:', address[0]);
 
-    const balance = await activeWallet.getBalance();
+    const balance = activeWallet.getBalance();
     console.log('Balance:', balance);
 
-    const inscriptions = await activeWallet.getInscriptions(0, 10);
+    const inscriptions = activeWallet.getInscriptions(0, 10);
     console.log('Number of Inscriptions:', inscriptions.total);
 
   } catch (e) {
