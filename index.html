@@ -173,7 +173,7 @@ function initializeWallet() {
 	});
   
   disconnectButton.addEventListener("click", disconnectWallet);	
-}
+
 
 	function handleNetworkChanged() {
   console.log("Network changed");
@@ -188,8 +188,10 @@ function handleAddressChanged() {
     disconnectWallet;
   }
 }
-	// end of wallet connect
 	
+	}
+
+// end of wallet connect
 
 const checkWalletButton = document.getElementById('check-wallet');
 
