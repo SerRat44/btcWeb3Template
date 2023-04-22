@@ -191,8 +191,46 @@ checkWalletButton.addEventListener('click', () => {
     alert('Please connect your wallet first.');
   } else {
     // Add your logic to check the wallet for satoshi rarity types here
+	const data = getSatsData(unisat.getAccounts());
+	const rarity = determineRarity(data);
+	const sortedSats = sortSatsByRarity(rarity);
+	displaySortedSats(sortedSats);
   }
 });
+
+
+
+// Function to retrieve sats data from mempool.space API
+async function getSatsData(walletAddress) {
+  const response = await fetch(`https://mempool.space/api/address/${walletAddress}/utxo`);
+  const data = await response.json();
+  return data;
+}
+
+// Function to determine the rarity of each sat in the sats data
+function determineRarity(satsData) {
+  const rarity = {};
+  for (const sat of satsData) {
+    if (rarity[sat.value]) {
+      rarity[sat.value]++;
+    } else {
+      rarity[sat.value] = 1;
+    }
+  }
+  return rarity;
+}
+
+// Function to sort the sats according to their rarity
+function sortSatsByRarity(satsData) {
+  const rarity = determineRarity(satsData);
+  const sortedSats = satsData.sort((a, b) => rarity[b.value] - rarity[a.value]);
+  return sortedSats;
+}
+
+// Function to display the sorted sats in the console
+function displaySortedSats(sortedSats) {
+  console.log(sortedSats);
+}
 
 
 
