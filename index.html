@@ -82,46 +82,33 @@
   unisat: {
     connect: async () => await window.unisat.requestAccounts(),
     getAccounts: async () => await window.unisat.getAccounts(),
-    // Add other UniSat API methods here
+    getNetwork: async () => await window.unisat.getNetwork(),
+    switchNetwork: async (network) => await window.unisat.switchNetwork(network),
+    getPublicKey: async () => await window.unisat.getPublicKey(),
+    getBalance: async () => await window.unisat.getBalance(),
+    getInscriptions: async (cursor, size) => await window.unisat.getInscriptions(cursor, size),
+    sendBitcoin: async (toAddress, satoshis, options) => await window.unisat.sendBitcoin(toAddress, satoshis, options),
+    sendInscription: async (address, inscriptionId, options) => await window.unisat.sendInscription(address, inscriptionId, options),
+    signMessage: async (msg, address) => await window.unisat.signMessage(msg, address),
+    pushTx: async (options) => await window.unisat.pushTx(options),
+    signPsbt: async (psbtHex) => await window.unisat.signPsbt(psbtHex),
+    pushPsbt: async (psbtHex) => await window.unisat.pushPsbt(psbtHex),
+    onAccountsChanged: (handler) => window.unisat.on('accountsChanged', handler),
+    offAccountsChanged: (handler) => window.unisat.removeListener('accountsChanged', handler),
+    onNetworkChanged: (handler) => window.unisat.on('networkChanged', handler),
+    offNetworkChanged: (handler) => window.unisat.removeListener('networkChanged', handler),
   },
 };
+
 let activeWallet;
 
 function initializeWallet() {
   
-  
-  const connectButton = document.getElementById('connect-wallet');
+	const connectButton = document.getElementById('connect-wallet');
     const selectMenu = document.getElementById('select-menu');
     const unisatButton = document.getElementById('unisat-wallet');
     const optionsMenu = document.getElementById('options-menu');
     const disconnectButton = document.getElementById('disconnect-wallet');
-
-  const connectWallet = async (walletKey) => {
-    try {
-      activeWallet = wallets[walletKey];
-      const accounts = await activeWallet.connect();
-      connectButton.textContent = `${accounts[0].substr(0, 8)}...`;
-      selectMenu.style.display = "none";
-    } catch (e) {
-      console.log("connect failed");
-    }
-  };
-
-  const disconnectWallet = async () => {
-    try {
-      await activeWallet.connect();
-      resetConnectButton();
-      optionsMenu.style.display = "none";
-      activeWallet = null;
-      console.log("disconnect successful");
-    } catch (e) {
-      console.log("disconnect failed");
-    }
-  };
-	
-    
-	
-
 	
 	const setMenuVisibility = (menu, isVisible) => {
 		menu.style.display = isVisible ? 'flex' : 'none';
@@ -145,22 +132,44 @@ function initializeWallet() {
     };
 	document.addEventListener('click', handleBodyClick);
 	
-    connectButton.addEventListener('click', () => {
+	const connectWallet = async (walletKey) => {
+    try {
+      activeWallet = wallets[walletKey];
+      const accounts = await activeWallet.connect();
+      connectButton.textContent = `${accounts[0].substr(0, 8)}...`;
+      selectMenu.style.display = "none";
+	  console.log("connect successful");
+    } catch (e) {
+      console.log("connect failed");
+    }
+  };
+
+  const disconnectWallet = async () => {
+    try {
+	activeWallet = null;
+      resetConnectButton();
+      optionsMenu.style.display = "none";
+      
+      console.log("disconnect successful");
+    } catch (e) {
+      console.log("disconnect failed");
+    }
+  };
+	
+	connectButton.addEventListener('click', () => {
       if (connectButton.textContent !== 'Connect Wallet') {
         setMenuVisibility(optionsMenu, true);
       } else {
         setMenuVisibility(selectMenu, true);
       }
     });
-	
-	unisatButton.addEventListener("click", () => {
-    connectWallet("unisat");
-  });
-
-  disconnectButton.addEventListener("click", disconnectWallet);
+  
+  unisatButton.addEventListener("click", () => {
+	connectWallet("unisat");
+	});
+  
+  disconnectButton.addEventListener("click", disconnectWallet);	
 }
-
-
 	// end of wallet connect
 	
 
