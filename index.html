@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>UniSat Wallet Demo</title>
+  <title>btcWeb3ConnectTemplate</title>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="shortcut icon" href="https://your-site.com/your-icon.png" />
@@ -11,7 +11,6 @@
 	  margin: 4px;
 	  overflow-y: auto;
     }
-	
     #connect-wallet {
       position: fixed;
       top: 10px;
@@ -25,7 +24,6 @@
 	button { margin: 4px; white-space: nowrap; }
     button:not([disabled]):hover { background-color: #ddd; cursor: pointer; }
     button:disabled { cursor: not-allowed; }
-  
     .wallet-menu {
       display: none;
       position: fixed;
@@ -82,7 +80,21 @@
   unisat: {
     connect: async () => await window.unisat.requestAccounts(),
     getAccounts: async () => await window.unisat.getAccounts(),
-    // Add other UniSat API methods here
+    getNetwork: async () => await window.unisat.getNetwork(),
+    switchNetwork: async (network) => await window.unisat.switchNetwork(network),
+    getPublicKey: async () => await window.unisat.getPublicKey(),
+    getBalance: async () => await window.unisat.getBalance(),
+    getInscriptions: async (cursor, size) => await window.unisat.getInscriptions(cursor, size),
+    sendBitcoin: async (toAddress, satoshis, options) => await window.unisat.sendBitcoin(toAddress, satoshis, options),
+    sendInscription: async (address, inscriptionId, options) => await window.unisat.sendInscription(address, inscriptionId, options),
+    signMessage: async (msg, address) => await window.unisat.signMessage(msg, address),
+    pushTx: async (options) => await window.unisat.pushTx(options),
+    signPsbt: async (psbtHex) => await window.unisat.signPsbt(psbtHex),
+    pushPsbt: async (psbtHex) => await window.unisat.pushPsbt(psbtHex),
+    onAccountsChanged: (handler) => window.unisat.on('accountsChanged', handler),
+    offAccountsChanged: (handler) => window.unisat.removeListener('accountsChanged', handler),
+    onNetworkChanged: (handler) => window.unisat.on('networkChanged', handler),
+    offNetworkChanged: (handler) => window.unisat.removeListener('networkChanged', handler),
   },
 };
 
@@ -158,22 +170,25 @@ function initializeWallet() {
 
   disconnectButton.addEventListener("click", disconnectWallet);
 }
-
-
 	// end of wallet connect
 	
 
 const checkWalletButton = document.getElementById('check-wallet');
 
 checkWalletButton.addEventListener('click', async () => {
+  if (!activeWallet) {
+    console.log('Please connect your wallet first.');
+    return;
+  }
+
   try {
-    const address = await window.unisat.getAccounts();
+    const address = await activeWallet.getAccounts();
     console.log('Address:', address[0]);
-    
-    const balance = await window.unisat.getBalance();
+
+    const balance = await activeWallet.getBalance();
     console.log('Balance:', balance);
-    
-    const inscriptions = await window.unisat.getInscriptions(0, 10);
+
+    const inscriptions = await activeWallet.getInscriptions(0, 10);
     console.log('Number of Inscriptions:', inscriptions.total);
 
   } catch (e) {
