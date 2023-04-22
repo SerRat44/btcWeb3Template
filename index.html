@@ -132,6 +132,20 @@ function initializeWallet() {
     };
 	document.addEventListener('click', handleBodyClick);
 	
+	const disconnectWallet = async () => {
+    try {
+	  
+	activeWallet = null;
+      resetConnectButton();
+      optionsMenu.style.display = "none";
+      console.log("disconnect successful");
+	  
+	  
+    } catch (e) {
+      console.log("disconnect failed");
+    }
+  };
+	
 	const connectWallet = async (walletKey) => {
     try {
       activeWallet = wallets[walletKey];
@@ -146,21 +160,7 @@ function initializeWallet() {
       console.log("connect failed");
     }
   };
-
-  const disconnectWallet = async () => {
-    try {
-	  
-	activeWallet = null;
-      resetConnectButton();
-      optionsMenu.style.display = "none";
-      console.log("disconnect successful");
-	  
-	  
-    } catch (e) {
-      console.log("disconnect failed");
-    }
-  };
-	
+  
 	connectButton.addEventListener('click', () => {
       if (connectButton.textContent !== 'Connect Wallet') {
         setMenuVisibility(optionsMenu, true);
@@ -179,14 +179,14 @@ function initializeWallet() {
 	function handleNetworkChanged() {
   console.log("Network changed");
   if (activeWallet) {
-    disconnectWallet();
+    await disconnectWallet();
   }
 }
 
 function handleAddressChanged() {
   console.log("Address changed");
   if (activeWallet) {
-    disconnectWallet();
+    await disconnectWallet();
   }
 }
 	// end of wallet connect
