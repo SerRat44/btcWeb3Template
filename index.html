@@ -53,19 +53,6 @@
       justify-content: center;
 	  margin-top: 50px;
 	}
-	#rarity-table {
-      width: 40%;
-      max-width: 600px;
-      margin: 30px auto;
-      border-collapse: collapse;
-      background-color: #fff;
-    }
-    #rarity-table th,
-    #rarity-table td {
-      padding: 10px;
-      text-align: center;
-      border: 1px solid #ccc;
-    }
   </style>
 </head>
 
@@ -82,22 +69,11 @@
   
   <div id="main-body">
     <button id="check-wallet">Check Wallet</button>
-    <table id="rarity-table">
-    <thead>
-      <tr>
-        <th>Rarity</th>
-        <th>Quantity</th>
-      </tr>
-    </thead>
-    <tbody>
-    <!-- Table rows will be generated using JavaScript -->
-    </tbody>
-  </table>
   </div>
 
   <script>
 	//start of wallet connect
-	function initializeWallet() {
+function initializeWallet() {
 	
     const connectButton = document.getElementById('connect-wallet');
     const selectMenu = document.getElementById('select-menu');
@@ -151,57 +127,34 @@
     unisatButton.addEventListener('click', async () => {
       try {
         const accounts = await window.unisat.requestAccounts();
-        console.log('connect success', accounts);
         connectButton.textContent = `${accounts[0].substr(0, 8)}...`;
         selectMenu.style.display = 'none';
       } catch (e) {
         console.log('connect failed');
       }
     });
-	
-	}
+}
 
 	// end of wallet connect
 	
-	const checkWalletButton = document.getElementById('check-wallet');
-	const rarityTable = document.getElementById('rarity-table');
-	const tableBody = rarityTable.querySelector('tbody');
 
-	
-	let rarityData = [
-  { name: 'common', quantity: 0 },
-  { name: 'uncommon', quantity: 0 },
-  { name: 'rare', quantity: 0 },
-  { name: 'epic', quantity: 0 },
-  { name: 'legendary', quantity: 0 },
-  { name: 'mythic', quantity: 0 },
-];
+const checkWalletButton = document.getElementById('check-wallet');
 
-const showTable = () => {
-  tableBody.innerHTML = '';
-  for (const rarity of rarityData) {
-    const row = document.createElement('tr');
-    const nameCell = document.createElement('td');
-    const quantityCell = document.createElement('td');
-    nameCell.textContent = rarity.name;
-    quantityCell.textContent = rarity.quantity;
-    row.appendChild(nameCell);
-    row.appendChild(quantityCell);
-    tableBody.appendChild(row);
-  }
-  checkWalletButton.style.display = 'block';
-  rarityTable.style.display = 'table';
-};
+checkWalletButton.addEventListener('click', async () => {
+  try {
+    const address = await window.unisat.getAccounts();
+    console.log('Address:', address[0]);
+    
+    const balance = await window.unisat.getBalance();
+    console.log('Balance:', balance);
+    
+    const inscriptions = await window.unisat.getInscriptions(0, 10);
+    console.log('Number of Inscriptions:', inscriptions.total);
 
-checkWalletButton.addEventListener('click', () => {
-  if (connectButton.textContent === 'Connect Wallet') {
-    alert('Please connect your wallet first.');
-  } else {
-    // Add your logic to check the wallet for satoshi rarity types here
+  } catch (e) {
+    console.log(e);
   }
 });
-
-
 
 
 initializeWallet();
