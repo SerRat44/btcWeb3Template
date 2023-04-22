@@ -191,7 +191,7 @@ checkWalletButton.addEventListener('click', () => {
     alert('Please connect your wallet first.');
   } else {
     // Add your logic to check the wallet for satoshi rarity types here
-	const data = getSatsData(unisat.getAccounts());
+	const data = getSatsData(await window.unisat.requestAccounts(););
 	const rarity = determineRarity(data);
 	const sortedSats = sortSatsByRarity(rarity);
 	displaySortedSats(sortedSats);
@@ -204,6 +204,7 @@ checkWalletButton.addEventListener('click', () => {
 async function getSatsData(walletAddress) {
   const response = await fetch(`https://mempool.space/api/address/${walletAddress}/utxo`);
   const data = await response.json();
+  console.log(data);
   return data;
 }
 
@@ -217,6 +218,7 @@ function determineRarity(satsData) {
       rarity[sat.value] = 1;
     }
   }
+  console.log(rarity);
   return rarity;
 }
 
