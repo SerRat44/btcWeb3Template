@@ -139,6 +139,9 @@ function initializeWallet() {
       connectButton.textContent = `${accounts[0].substr(0, 8)}...`;
       selectMenu.style.display = "none";
 	  console.log("connect successful");
+	  
+	  activeWallet.onNetworkChanged(handleNetworkChanged);
+    activeWallet.onAccountsChanged(handleAddressChanged);
     } catch (e) {
       console.log("connect failed");
     }
@@ -146,11 +149,13 @@ function initializeWallet() {
 
   const disconnectWallet = async () => {
     try {
+	  
 	activeWallet = null;
       resetConnectButton();
       optionsMenu.style.display = "none";
-      
       console.log("disconnect successful");
+	  
+	  
     } catch (e) {
       console.log("disconnect failed");
     }
@@ -170,6 +175,20 @@ function initializeWallet() {
   
   disconnectButton.addEventListener("click", disconnectWallet);	
 }
+
+	function handleNetworkChanged() {
+  console.log("Network changed");
+  if (activeWallet) {
+    disconnectWallet();
+  }
+}
+
+function handleAddressChanged() {
+  console.log("Address changed");
+  if (activeWallet) {
+    disconnectWallet();
+  }
+}
 	// end of wallet connect
 	
 
@@ -183,7 +202,7 @@ checkWalletButton.addEventListener('click', async () => {
 
   try {
     const address = await activeWallet.getAccounts();
-    console.log('Address:', address[0]);
+    console.log('Address:', address);
 
     const balance = await activeWallet.getBalance();
     console.log('Balance:', balance);
