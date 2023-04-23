@@ -76,7 +76,7 @@
   </div>
 
   <script>
-	//start of wallet connect
+//start of wallet connect
 	const wallets = {
   unisat: {
     connect: async () => await window.unisat.requestAccounts(),
@@ -135,12 +135,11 @@ function initializeWallet() {
     try {
 	  activeWallet.offNetworkChanged(handleNetworkChanged);
       activeWallet.offAccountsChanged(handleAddressChanged);
+	  
 	activeWallet = null;
       resetConnectButton();
       optionsMenu.style.display = "none";
       console.log("disconnect successful");
-	  
-	  
     } catch (e) {
       console.log("disconnect failed");
     }
@@ -153,9 +152,6 @@ function initializeWallet() {
       connectButton.textContent = `${accounts[0].substr(0, 8)}...`;
       selectMenu.style.display = "none";
 	  console.log("connect successful");
-	  
-	  activeWallet.onNetworkChanged(handleNetworkChanged);
-    activeWallet.onAccountsChanged(handleAddressChanged);
     } catch (e) {
       console.log("connect failed");
     }
@@ -173,25 +169,9 @@ function initializeWallet() {
 	connectWallet("unisat");
 	});
   
-  disconnectButton.addEventListener("click", disconnectWallet);	
-
-
-	function handleNetworkChanged() {
-  console.log("Network changed");
-  if (activeWallet) {
-    disconnectWallet();
-  }
+  disconnectButton.addEventListener("click", disconnectWallet);
+  
 }
-
-function handleAddressChanged() {
-  console.log("Address changed");
-  if (activeWallet) {
-    disconnectWallet();
-  }
-}
-	
-	}
-
 // end of wallet connect
 
 const checkWalletButton = document.getElementById('check-wallet');
