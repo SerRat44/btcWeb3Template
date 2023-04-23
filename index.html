@@ -133,8 +133,7 @@ function initializeWallet() {
 	
 	const disconnectWallet = async () => {
     try {
-	  activeWallet.offNetworkChanged(handleNetworkChanged);
-      activeWallet.offAccountsChanged(handleAddressChanged);
+
 	activeWallet = null;
       resetConnectButton();
       optionsMenu.style.display = "none";
